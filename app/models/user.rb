@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  # the user has many microposts and if the user is deleted, mposts are deleted as well
+  has_many :microposts, dependent: :destroy
   attr_accessor :remember_token, :activation_token, :reset_token
   before_save :downcase_email
   before_create :create_activation_digest
@@ -12,6 +14,11 @@ class User < ApplicationRecord
 
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 },allow_nil: true
+
+
+  def feed
+    Micropost.where("user_id=?",id)
+  end
 
   # returns a hash digest of any given string
   def self.digest(string)
